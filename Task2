@@ -1,0 +1,51 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+years = np.repeat([2019, 2020, 2021, 2022], 12)
+months = list(range(1, 13)) * 4
+
+rates = (
+    list(np.random.uniform(4.8, 5.5, 12)) +
+    list(np.random.uniform(7.5, 10.5, 12)) +
+    list(np.random.uniform(6.0, 7.2, 12)) +
+    list(np.random.uniform(5.2, 6.0, 12))
+)
+
+df = pd.DataFrame({
+    "Year": years,
+    "Month": months,
+    "Unemployment_Rate": rates
+})
+
+df["Date"] = pd.to_datetime(df["Year"].astype(str) + "-" + df["Month"].astype(str))
+print(df.head())
+
+plt.figure()
+sns.lineplot(data=df, x="Date", y="Unemployment_Rate")
+plt.title("Unemployment Trend Over Time")
+plt.xlabel("Year")
+plt.ylabel("Unemployment Rate (%)")
+plt.show()
+
+plt.figure()
+sns.boxplot(data=df, x="Year", y="Unemployment_Rate")
+plt.title("Year-wise Unemployment Distribution")
+plt.show()
+
+monthly_avg = df.groupby("Month")["Unemployment_Rate"].mean()
+
+plt.figure()
+sns.barplot(x=monthly_avg.index, y=monthly_avg.values)
+plt.title("Seasonal Unemployment Pattern (Monthly)")
+plt.xlabel("Month")
+plt.ylabel("Average Unemployment Rate (%)")
+plt.show()
+
+pre_covid = df[df["Year"] < 2020]["Unemployment_Rate"].mean()
+post_covid = df[df["Year"] >= 2020]["Unemployment_Rate"].mean()
+
+print("\nAverage Unemployment Rate:")
+print("Before Covid:", round(pre_covid, 2))
+print("During/After Covid:", round(post_covid, 2))
